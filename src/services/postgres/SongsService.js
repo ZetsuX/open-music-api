@@ -2,10 +2,7 @@ const { Pool } = require("pg");
 const { nanoid } = require("nanoid");
 const InvariantError = require("../../exceptions/InvariantError");
 const NotFoundError = require("../../exceptions/NotFoundError");
-const {
-    songMapDBToModel,
-    songDetailMapDBToModel,
-} = require("../../utils/songsMapper");
+const { songMapDBToModel } = require("../../utils/songsMapper");
 
 class SongsService {
     constructor() {
@@ -42,31 +39,29 @@ class SongsService {
     }
 
     async getSongs({ title, performer }) {
-        let result;
-
         if (title && performer) {
             const query = {
-                text: "SELECT * FROM songs WHERE title ILIKE $1 AND performer ILIKE $2",
+                text: "SELECT id, title, performer FROM songs WHERE title ILIKE $1 AND performer ILIKE $2",
                 values: [`%${title}%`, `%${performer}%`],
             };
-            result = await this._pool.query(query);
+            return (await this._pool.query(query)).rows;
         } else if (title) {
             const query = {
-                text: "SELECT * FROM songs WHERE title ILIKE $1",
+                text: "SELECT id, title, performer FROM songs WHERE title ILIKE $1",
                 values: [`%${title}%`],
             };
-            result = await this._pool.query(query);
+            return (await this._pool.query(query)).rows;
         } else if (performer) {
             const query = {
-                text: "SELECT * FROM songs WHERE performer ILIKE $1",
+                text: "SELECT id, title, performer FROM songs WHERE performer ILIKE $1",
                 values: [`%${performer}%`],
             };
-            result = await this._pool.query(query);
+            return (await this._pool.query(query)).rows;
         } else {
-            result = await this._pool.query("SELECT * FROM songs");
+            return (
+                await this._pool.query("SELECT id, title, performer FROM songs")
+            ).rows;
         }
-
-        return result.rows.map(songMapDBToModel);
     }
 
     async getSongById(id) {
@@ -79,7 +74,7 @@ class SongsService {
         if (!result.rows.length) {
             throw new NotFoundError("Lagu tidak ditemukan");
         }
-        return result.rows.map(songDetailMapDBToModel)[0];
+        return result.rows.map(songMapDBToModel)[0];
     }
 
     async editSongById(

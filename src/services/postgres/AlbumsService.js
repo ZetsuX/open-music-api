@@ -3,7 +3,6 @@ const { nanoid } = require("nanoid");
 const InvariantError = require("../../exceptions/InvariantError");
 const NotFoundError = require("../../exceptions/NotFoundError");
 const { albumMapDBToModel } = require("../../utils/albumsMapper");
-const { songMapDBToModel } = require("../../utils/songsMapper");
 
 class AlbumsService {
     constructor() {
@@ -42,11 +41,10 @@ class AlbumsService {
         let res = result.rows.map(albumMapDBToModel)[0];
 
         const querySong = {
-            text: "SELECT * FROM songs WHERE album_id = $1",
+            text: "SELECT id, title, performer FROM songs WHERE album_id = $1",
             values: [id],
         };
-        const songsRes = await this._pool.query(querySong);
-        res["songs"] = songsRes.rows.map(songMapDBToModel);
+        res.songs = (await this._pool.query(querySong)).rows;
 
         return res;
     }
