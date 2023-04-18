@@ -5,7 +5,7 @@ const songDetailMapDBToModel = ({
     performer,
     genre,
     duration,
-    albumId,
+    album_id,
     created_at,
     updated_at,
 }) => ({
@@ -15,7 +15,7 @@ const songDetailMapDBToModel = ({
     performer,
     genre,
     duration,
-    albumId,
+    albumId: album_id,
     createdAt: created_at,
     updatedAt: updated_at,
 });

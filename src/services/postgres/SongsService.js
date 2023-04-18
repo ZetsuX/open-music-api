@@ -59,11 +59,23 @@ class SongsService {
         return result.rows.map(songDetailMapDBToModel)[0];
     }
 
-    async editSongById(id, { name, year }) {
+    async editSongById(
+        id,
+        { title, year, genre, performer, duration, albumId }
+    ) {
         const updatedAt = new Date().toISOString();
         const query = {
-            text: "UPDATE songs SET name = $1, year = $2, updated_at = $3 WHERE id = $4 RETURNING id",
-            values: [name, year, updatedAt, id],
+            text: "UPDATE songs SET title = $1, year = $2, genre = $3, performer = $4, duration = $5, album_id = $6, updated_at = $7 WHERE id = $8 RETURNING id",
+            values: [
+                title,
+                year,
+                genre,
+                performer,
+                duration,
+                albumId,
+                updatedAt,
+                id,
+            ],
         };
 
         const result = await this._pool.query(query);
