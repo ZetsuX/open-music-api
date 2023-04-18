@@ -1,10 +1,31 @@
-const mapDBToModel = ({ id, title, body, tags, created_at, updated_at }) => ({
+const albumMapDBToModel = ({ id, name, year, created_at, updated_at }) => ({
     id,
-    title,
-    body,
-    tags,
+    name,
+    year,
     createdAt: created_at,
     updatedAt: updated_at,
 });
 
-module.exports = { mapDBToModel };
+const songMapDBToModel = ({
+    id,
+    title,
+    year,
+    performer,
+    genre,
+    duration,
+    albumId,
+    created_at,
+    updated_at,
+}) => ({
+    id,
+    title,
+    year,
+    performer,
+    genre,
+    duration,
+    albumId,
+    createdAt: created_at,
+    updatedAt: updated_at,
+});
+
+module.exports = { albumMapDBToModel, songMapDBToModel };
