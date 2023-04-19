@@ -1,6 +1,7 @@
 class AlbumsHandler {
-    constructor(service, validator) {
+    constructor(service, song_service, validator) {
         this._service = service;
+        this._songService = song_service;
         this._validator = validator;
     }
 
@@ -21,7 +22,8 @@ class AlbumsHandler {
 
     async getAlbumByIdHandler(request, h) {
         const { id } = request.params;
-        const album = await this._service.getAlbumById(id);
+        let album = await this._service.getAlbumById(id);
+        album.songs = await this._songService.getSongsByAlbumId(id);
 
         return {
             status: "success",

@@ -115,6 +115,14 @@ class SongsService {
             throw new NotFoundError("Lagu gagal dihapus. Id tidak ditemukan");
         }
     }
+
+    async getSongsByAlbumId(albumId) {
+        const querySong = {
+            text: "SELECT id, title, performer FROM songs WHERE album_id = $1",
+            values: [albumId],
+        };
+        return (await this._pool.query(querySong)).rows;
+    }
 }
 
 module.exports = SongsService;

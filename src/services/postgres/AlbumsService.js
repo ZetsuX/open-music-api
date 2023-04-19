@@ -38,15 +38,7 @@ class AlbumsService {
         if (!result.rowCount) {
             throw new NotFoundError("Album tidak ditemukan");
         }
-        let res = result.rows.map(albumMapDBToModel)[0];
-
-        const querySong = {
-            text: "SELECT id, title, performer FROM songs WHERE album_id = $1",
-            values: [id],
-        };
-        res.songs = (await this._pool.query(querySong)).rows;
-
-        return res;
+        return result.rows.map(albumMapDBToModel)[0];
     }
 
     async editAlbumById(id, { name, year }) {
