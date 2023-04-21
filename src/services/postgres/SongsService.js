@@ -123,6 +123,54 @@ class SongsService {
         };
         return (await this._pool.query(querySong)).rows;
     }
+
+    async addSongToPlaylist(songId, playlistId) {
+        const id = `playlists_songs-${nanoid(16)}`;
+
+        const query = {
+            text: "INSERT INTO playlists_songs VALUES($1, $2, $3) RETURNING id",
+            values: [id, playlistId, songId],
+        };
+
+        const result = await this._pool.query(query);
+        if (!result.rowCount) {
+            throw new InvariantError("Lagu gagal ditambahkan ke playlist");
+        }
+
+        return result.rows[0].id;
+    }
+
+    async getSongsByPlaylistId(id) {
+        const query = {
+            text: "SELECT so.id, so.title, so.performer FROM songs so INNER JOIN playlists_songs ps ON so.id = ps.song_id WHERE ps.playlist_id = $1 GROUP BY so.id",
+            values: [id],
+        };
+        return (await this._pool.query(query)).rows;
+    }
+
+    async deleteSongFromPlaylist(songId, playlistId) {
+        const query = {
+            text: "DELETE FROM playlists_songs WHERE song_id = $1 AND playlist_id = $2 RETURNING id",
+            values: [songId, playlistId],
+        };
+
+        const result = await this._pool.query(query);
+        if (!result.rowCount) {
+            throw new InvariantError("Lagu gagal dihapus dari playlist");
+        }
+    }
+
+    async verifySong(id) {
+        const query = {
+            text: "SELECT id FROM songs WHERE id = $1",
+            values: [id],
+        };
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new NotFoundError("Lagu tidak ditemukan");
+        }
+    }
 }
 
 module.exports = SongsService;
