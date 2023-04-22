@@ -72,6 +72,13 @@ class PlaylistsHandler {
             playlistId
         );
 
+        await this._playlistsService.addPlaylistSongActivity(
+            playlistId,
+            songId,
+            credentialId,
+            "add"
+        );
+
         const response = h.response({
             status: "success",
             message: "Lagu berhasil ditambahkan ke Playlist",
@@ -120,9 +127,36 @@ class PlaylistsHandler {
 
         await this._songsService.deleteSongFromPlaylist(songId, playlistId);
 
+        await this._playlistsService.addPlaylistSongActivity(
+            playlistId,
+            songId,
+            credentialId,
+            "delete"
+        );
+
         return {
             status: "success",
             message: "Kolaborasi berhasil dihapus",
+        };
+    }
+
+    async getPlaylistSongActivitiesHandler(request) {
+        const { id: credentialId } = request.auth.credentials;
+        const { id: playlistId } = request.params;
+
+        await this._playlistsService.verifyPlaylistAccess(
+            playlistId,
+            credentialId
+        );
+
+        const activities =
+            await this._playlistsService.getPlaylistSongActivities(playlistId);
+        return {
+            status: "success",
+            data: {
+                playlistId,
+                activities,
+            },
         };
     }
 }

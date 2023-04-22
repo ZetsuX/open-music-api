@@ -88,6 +88,35 @@ class PlaylistsService {
         }
     }
 
+    async addPlaylistSongActivity(playlistId, songId, userId, action) {
+        const id = `activity-${nanoid(16)}`;
+        const curTime = new Date().toISOString();
+
+        const query = {
+            text: "INSERT INTO playlist_song_activities VALUES($1, $2, $3, $4, $5, $6)",
+            values: [id, action, curTime, playlistId, songId, userId],
+        };
+
+        const result = await this._pool.query(query);
+
+        if (!result.rowCount) {
+            throw new InvariantError("Activity gagal dicatat");
+        }
+    }
+
+    async getPlaylistSongActivities(playlistId) {
+        const query = {
+            text: `SELECT us.username, so.title, ac.action, ac.time FROM playlist_song_activities ac 
+            LEFT JOIN users us ON us.id = ac.user_id 
+            LEFT JOIN songs so ON so.id = ac.song_id
+            WHERE ac.playlist_id = $1`,
+            values: [playlistId],
+        };
+        const result = await this._pool.query(query);
+
+        return result.rows;
+    }
+
     async verifyPlaylistAccess(playlistId, userId) {
         try {
             await this.verifyPlaylistOwner(playlistId, userId);
