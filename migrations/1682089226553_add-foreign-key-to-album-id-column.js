@@ -4,7 +4,7 @@ exports.shorthands = undefined;
 
 exports.up = (pgm) => {
     pgm.sql(
-        "INSERT INTO albums(id, albumname, password, fullname) VALUES ('old_songs', 'old_songs', 'old_songs', 'old songs')"
+        "INSERT INTO albums VALUES ('old_songs', 'old_songs', 0, 'old_songs', 'old_songs')"
     );
 
     pgm.sql("UPDATE songs SET album_id = 'old_songs' WHERE album_id IS NULL");
