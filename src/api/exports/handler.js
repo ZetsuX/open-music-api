@@ -14,18 +14,18 @@ class ExportsHandler {
         await this._playlistsService.verifyPlaylistOwner(playlistId, userId);
 
         const message = {
-            userId,
+            playlistId,
             targetEmail: request.payload.targetEmail,
         };
 
         await this._producerService.sendMessage(
-            "export:playlists",
+            "export:playlist",
             JSON.stringify(message)
         );
 
         const response = h.response({
             status: "success",
-            message: "Permintaan Anda dalam antrean",
+            message: "Permintaan Anda sedang kami proses",
         });
         response.code(201);
         return response;

@@ -51,7 +51,7 @@ class PlaylistsService {
 
         const { rows, rowCount } = await this._pool.query(query);
         if (!rowCount) {
-            throw new InvariantError("Playlist gagal ditambahkan");
+            throw new InvariantError("Playlist gagal didapatkan");
         }
 
         return rows[0];
