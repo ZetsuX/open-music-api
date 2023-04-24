@@ -20,13 +20,13 @@ class PlaylistsService {
             values: [id, name, owner, createdAt, updatedAt],
         };
 
-        const result = await this._pool.query(query);
+        const { rows, rowCount } = await this._pool.query(query);
 
-        if (!result.rowCount) {
+        if (!rowCount) {
             throw new InvariantError("Playlist gagal ditambahkan");
         }
 
-        return result.rows[0].id;
+        return rows[0].id;
     }
 
     async getPlaylists(owner) {
@@ -38,9 +38,9 @@ class PlaylistsService {
             GROUP BY pl.id, us.username`,
             values: [owner],
         };
-        const result = await this._pool.query(query);
+        const { rows } = await this._pool.query(query);
 
-        return result.rows;
+        return rows;
     }
 
     async getPlaylistById(id) {
@@ -49,12 +49,12 @@ class PlaylistsService {
             values: [id],
         };
 
-        const result = await this._pool.query(query);
-        if (!result.rowCount) {
+        const { rows, rowCount } = await this._pool.query(query);
+        if (!rowCount) {
             throw new InvariantError("Playlist gagal ditambahkan");
         }
 
-        return result.rows[0];
+        return rows[0];
     }
 
     async deletePlaylistById(id) {
@@ -63,8 +63,8 @@ class PlaylistsService {
             values: [id],
         };
 
-        const result = await this._pool.query(query);
-        if (!result.rowCount) {
+        const { rowCount } = await this._pool.query(query);
+        if (!rowCount) {
             throw new InvariantError("Playlist gagal dihapus");
         }
     }
@@ -75,12 +75,12 @@ class PlaylistsService {
             values: [id],
         };
 
-        const result = await this._pool.query(query);
-        if (!result.rowCount) {
+        const { rows, rowCount } = await this._pool.query(query);
+        if (!rowCount) {
             throw new NotFoundError("Playlist tidak ditemukan");
         }
 
-        const playlist = result.rows[0];
+        const playlist = rows[0];
         if (playlist.owner !== owner) {
             throw new AuthorizationError(
                 "Anda tidak berhak mengakses resource ini"
@@ -97,9 +97,9 @@ class PlaylistsService {
             values: [id, action, curTime, playlistId, songId, userId],
         };
 
-        const result = await this._pool.query(query);
+        const { rowCount } = await this._pool.query(query);
 
-        if (!result.rowCount) {
+        if (!rowCount) {
             throw new InvariantError("Activity gagal dicatat");
         }
     }
@@ -112,9 +112,9 @@ class PlaylistsService {
             WHERE ac.playlist_id = $1`,
             values: [playlistId],
         };
-        const result = await this._pool.query(query);
+        const { rows } = await this._pool.query(query);
 
-        return result.rows;
+        return rows;
     }
 
     async verifyPlaylistAccess(playlistId, userId) {

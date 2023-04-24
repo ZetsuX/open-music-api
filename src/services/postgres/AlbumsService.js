@@ -19,13 +19,13 @@ class AlbumsService {
             values: [id, name, year, createdAt, updatedAt],
         };
 
-        const result = await this._pool.query(query);
+        const { rows } = await this._pool.query(query);
 
-        if (!result.rows[0].id) {
+        if (!rows[0].id) {
             throw new InvariantError("Album gagal ditambahkan");
         }
 
-        return result.rows[0].id;
+        return rows[0].id;
     }
 
     async getAlbumById(id) {
@@ -33,12 +33,12 @@ class AlbumsService {
             text: "SELECT * FROM albums WHERE id = $1",
             values: [id],
         };
-        const result = await this._pool.query(query);
+        const { rows, rowCount } = await this._pool.query(query);
 
-        if (!result.rowCount) {
+        if (!rowCount) {
             throw new NotFoundError("Album tidak ditemukan");
         }
-        return result.rows.map(albumMapDBToModel)[0];
+        return rows.map(albumMapDBToModel)[0];
     }
 
     async editAlbumById(id, { name, year }) {
@@ -48,9 +48,9 @@ class AlbumsService {
             values: [name, year, updatedAt, id],
         };
 
-        const result = await this._pool.query(query);
+        const { rowCount } = await this._pool.query(query);
 
-        if (!result.rowCount) {
+        if (!rowCount) {
             throw new NotFoundError(
                 "Gagal memperbarui album. Id tidak ditemukan"
             );
@@ -63,9 +63,9 @@ class AlbumsService {
             values: [id],
         };
 
-        const result = await this._pool.query(query);
+        const { rowCount } = await this._pool.query(query);
 
-        if (!result.rowCount) {
+        if (!rowCount) {
             throw new NotFoundError("Album gagal dihapus. Id tidak ditemukan");
         }
     }
