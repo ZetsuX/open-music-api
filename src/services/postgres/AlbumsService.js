@@ -69,6 +69,28 @@ class AlbumsService {
             throw new NotFoundError("Album gagal dihapus. Id tidak ditemukan");
         }
     }
+
+    async uploadCover(albumId, coverUrl) {
+        const updatedAt = new Date().toISOString();
+        const query = {
+            text: "UPDATE albums SET cover_url = $1, updated_at = $2 WHERE id = $3",
+            values: [coverUrl, updatedAt, albumId],
+        };
+
+        await this._pool.query(query);
+    }
+
+    async verifyAlbum(id) {
+        const query = {
+            text: "SELECT id FROM albums WHERE id = $1",
+            values: [id],
+        };
+        const { rowCount } = await this._pool.query(query);
+
+        if (!rowCount) {
+            throw new NotFoundError("Album tidak ditemukan");
+        }
+    }
 }
 
 module.exports = AlbumsService;
