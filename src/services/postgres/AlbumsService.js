@@ -2,6 +2,7 @@ const { Pool } = require("pg");
 const { nanoid } = require("nanoid");
 const InvariantError = require("../../exceptions/InvariantError");
 const NotFoundError = require("../../exceptions/NotFoundError");
+const ClientError = require("../../exceptions/ClientError");
 const { albumMapDBToModel } = require("../../utils/albumsMapper");
 
 class AlbumsService {
@@ -78,6 +79,50 @@ class AlbumsService {
         };
 
         await this._pool.query(query);
+    }
+
+    async likeAlbum(albumId, userId) {
+        let query = {
+            text: "SELECT * FROM user_album_likes WHERE album_id = $1 AND user_id = $2",
+            values: [albumId, userId],
+        };
+        const { rowCount } = await this._pool.query(query);
+
+        if (rowCount > 0) {
+            throw new ClientError("Album telah disukai");
+        }
+
+        const id = `album-${nanoid(16)}`;
+        query = {
+            text: "INSERT INTO user_album_likes VALUES($1, $2, $3) RETURNING id",
+            values: [id, albumId, userId],
+        };
+
+        const { rows } = await this._pool.query(query);
+        if (!rows[0].id) {
+            throw new InvariantError("Album gagal disukai");
+        }
+    }
+
+    async dislikeAlbum(albumId, userId) {
+        const query = {
+            text: "DELETE FROM user_album_likes WHERE album_id = $1 AND user_id = $2 RETURNING id",
+            values: [albumId, userId],
+        };
+
+        const { rowCount } = await this._pool.query(query);
+
+        if (!rowCount) {
+            throw new NotFoundError("Album gagal dihapus. Id tidak ditemukan");
+        }
+    }
+
+    async getAlbumLikes(id) {
+        const query = {
+            text: "SELECT COUNT(id) FROM user_album_likes WHERE album_id = $1",
+            values: [id],
+        };
+        return (await this._pool.query(query)).rows[0].count;
     }
 
     async verifyAlbum(id) {
