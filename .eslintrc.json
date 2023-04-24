@@ -8,6 +8,16 @@
         "ecmaVersion": 2020
     },
     "rules": {
-        "no-console": "off"
+        "no-console": "off",
+        "indent": "off",
+        "no-tabs": 0,
+        "quotes": "off",
+        "linebreak-style": ["error", "windows"],
+        "newline-per-chained-call": "off",
+        "no-underscore-dangle": "off",
+        "comma-dangle": "off",
+        "operator-linebreak": "off",
+        "implicit-arrow-linebreak": "off",
+        "object-curly-newline": "off"
     }
 }

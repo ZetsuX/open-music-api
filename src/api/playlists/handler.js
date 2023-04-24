@@ -67,7 +67,7 @@ class PlaylistsHandler {
             credentialId
         );
 
-        const playlist_songId = await this._songsService.addSongToPlaylist(
+        const playlistSongId = await this._songsService.addSongToPlaylist(
             songId,
             playlistId
         );
@@ -83,7 +83,7 @@ class PlaylistsHandler {
             status: "success",
             message: "Lagu berhasil ditambahkan ke Playlist",
             data: {
-                playlist_songId,
+                playlistSongId,
             },
         });
         response.code(201);
@@ -99,7 +99,9 @@ class PlaylistsHandler {
             credentialId
         );
 
-        let playlist = await this._playlistsService.getPlaylistById(playlistId);
+        const playlist = await this._playlistsService.getPlaylistById(
+            playlistId
+        );
         playlist.songs = await this._songsService.getSongsByPlaylistId(
             playlistId
         );
