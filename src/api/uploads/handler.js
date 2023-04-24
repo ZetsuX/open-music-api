@@ -1,3 +1,5 @@
+const config = require("../../utils/config");
+
 class UploadsHandler {
     constructor(storageService, albumsService, validator) {
         this._storageService = storageService;
@@ -14,7 +16,7 @@ class UploadsHandler {
         await this._albumsService.verifyAlbum(albumId);
 
         const filename = await this._storageService.writeFile(data, data.hapi);
-        const fileUrl = `http://${process.env.HOST}:${process.env.PORT}/upload/images/${filename}`;
+        const fileUrl = `http://${config.app.host}:${config.app.port}/upload/images/${filename}`;
 
         await this._albumsService.uploadCover(albumId, fileUrl);
 

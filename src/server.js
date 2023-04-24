@@ -42,6 +42,8 @@ const CacheService = require("./services/redis/CacheService");
 
 const ClientError = require("./exceptions/ClientError");
 
+const config = require("./utils/config");
+
 const init = async () => {
     const cacheService = new CacheService();
     const albumsService = new AlbumsService(cacheService);
@@ -55,8 +57,8 @@ const init = async () => {
     );
 
     const server = Hapi.server({
-        port: process.env.PORT,
-        host: process.env.HOST,
+        port: config.app.port,
+        host: config.app.host,
         routes: {
             cors: {
                 origin: ["*"],
@@ -75,12 +77,12 @@ const init = async () => {
     ]);
 
     server.auth.strategy("openmusicapi_jwt", "jwt", {
-        keys: process.env.ACCESS_TOKEN_KEY,
+        keys: config.token.access_key,
         verify: {
             aud: false,
             iss: false,
             sub: false,
-            maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+            maxAgeSec: config.token.access_age,
         },
         validate: (artifacts) => ({
             isValid: true,
